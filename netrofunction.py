@@ -42,7 +42,8 @@ def getInfo(key) :
 	r = requests.get(NETRO_BASE_URL + NETRO_GET_INFO, params=payload)
 
 	if DEBUG_MODE :
-		print("netrofunction.getInfo --> request status code = {0}, json result = {1}".format(r.status_code, r.json()))
+		print("netrofunction.getSchedules --> url = {0}".format(r.url))
+		print("netrofunction.getInfo --> GET request status code = {0}, json result = {1}".format(r.status_code, r.json()))
 
 	# is there a netro error ?
 	if (r.json()['status'] == NETRO_ERROR) :
@@ -54,4 +55,46 @@ def getInfo(key) :
 	else :
 		return r.json()
 
-	
+def setStatus(key, status) :
+	payload = {'key': key, 'status' : status}
+	r = requests.post(NETRO_BASE_URL + NETRO_POST_STATUS, data=payload)
+
+
+	if DEBUG_MODE :
+		print("netrofunction.getSchedules --> url = {0}".format(r.url))
+		print("netrofunction.setStatus --> POST request status code = {0}, json result = {1}".format(r.status_code, r.json()))
+
+	# is there a netro error ?
+	if (r.json()['status'] == NETRO_ERROR) :
+		raise netroException(r.json())
+	# is there an http error
+	elif (not r.ok) :
+		r.raise_for_status()
+	# so, it seems everything is ok !
+	else :
+		return r.json()
+
+def getSchedules(key, zoneIds=None, startDate='', endDate='') :
+	payload = {'key': key}
+	if (zoneIds is not None) :
+		payload['zones'] = '[{0}]'.format(', '.join(zoneIds))
+	if (startDate) :
+		payload['start_date'] = startDate
+	if (endDate) :
+		payload['end_date'] = endDate
+	r = requests.get(NETRO_BASE_URL + NETRO_GET_SCHEDULES, params=payload)
+
+	if DEBUG_MODE :
+		print("netrofunction.getSchedules --> url = {0}".format(r.url))
+		print("netrofunction.getSchedules --> GET request status code = {0}, json result = {1}".format(r.status_code, r.json()))
+
+	# is there a netro error ?
+	if (r.json()['status'] == NETRO_ERROR) :
+		raise netroException(r.json())
+	# is there an http error
+	elif (not r.ok) :
+		r.raise_for_status()
+	# so, it seems everything is ok !
+	else :
+		return r.json()
+

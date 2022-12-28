@@ -42,7 +42,7 @@ def getInfo(key) :
 	r = requests.get(NETRO_BASE_URL + NETRO_GET_INFO, params=payload)
 
 	if DEBUG_MODE :
-		print("netrofunction.getSchedules --> url = {0}".format(r.url))
+		print("netrofunction.getInfo --> url = {0}".format(r.url))
 		print("netrofunction.getInfo --> GET request status code = {0}, json result = {1}".format(r.status_code, r.json()))
 
 	# is there a netro error ?
@@ -60,7 +60,8 @@ def setStatus(key, status) :
 	r = requests.post(NETRO_BASE_URL + NETRO_POST_STATUS, data=payload)
 
 	if DEBUG_MODE :
-		print("netrofunction.getSchedules --> url = {0}".format(r.url))
+		print("netrofunction.setStatus --> url = {0}".format(r.url))
+		print("netrofunction.setStatus --> data = {0}".format(payload))
 		print("netrofunction.setStatus --> POST request status code = {0}, json result = {1}".format(r.status_code, r.json()))
 
 	# is there a netro error ?
@@ -143,11 +144,12 @@ def reportWeather(key, date, condition, rain, rain_prob, temp, t_min, t_max, t_d
 		payload['humidity'] = humidity
 	if (pressure) :
 		payload['pressure'] = pressure
-	r = requests.get(NETRO_BASE_URL + NETRO_POST_REPORTWEATHER, data=payload)
+	r = requests.post(NETRO_BASE_URL + NETRO_POST_REPORTWEATHER, data=payload)
 
 	if DEBUG_MODE :
 		print("netrofunction.reportWeather --> url = {0}".format(r.url))
-		print("netrofunction.reportWeather --> GET request status code = {0}, json result = {1}".format(r.status_code, r.json()))
+		print("netrofunction.reportWeather --> data = {0}".format(payload))
+		print("netrofunction.reportWeather --> POST request status code = {0}, json result = {1}".format(r.status_code, r.json()))
 
 	# is there a netro error ?
 	if (r.json()['status'] == NETRO_ERROR) :
@@ -159,4 +161,135 @@ def reportWeather(key, date, condition, rain, rain_prob, temp, t_min, t_max, t_d
 	else :
 		return r.json()
 
+def setMoisture(key, moisture, zoneIds) :
+	payload = {'key': key, 'moisture' : moisture}
+	if (zoneIds is not None) :
+		payload['zones'] = '[{0}]'.format(', '.join(zoneIds))
+	r = requests.post(NETRO_BASE_URL + NETRO_POST_MOISTURE, data=payload)
 
+	if DEBUG_MODE :
+		print("netrofunction.setMoisture --> url = {0}".format(r.url))
+		print("netrofunction.setMoisture --> data = {0}".format(payload))
+		print("netrofunction.setMoisture --> POST request status code = {0}, json result = {1}".format(r.status_code, r.json()))
+
+	# is there a netro error ?
+	if (r.json()['status'] == NETRO_ERROR) :
+		raise netroException(r.json())
+	# is there an http error
+	elif (not r.ok) :
+		r.raise_for_status()
+	# so, it seems everything is ok !
+	else :
+		return r.json()
+
+def water(key, duration, zoneIds=None, delay=0, startTime='') :
+	payload = {'key': key, 'duration' : duration}
+	if (zoneIds is not None) :
+		payload['zones'] = '[{0}]'.format(', '.join(zoneIds))
+	if (delay > 0) :
+		payload['delay'] = delay
+	if (startTime) :
+		payload['start_time'] = startTime
+	r = requests.post(NETRO_BASE_URL + NETRO_POST_WATER, data=payload)
+
+	if DEBUG_MODE :
+		print("netrofunction.water --> url = {0}".format(r.url))
+		print("netrofunction.water --> data = {0}".format(payload))
+		print("netrofunction.water --> POST request status code = {0}, json result = {1}".format(r.status_code, r.json()))
+
+	# is there a netro error ?
+	if (r.json()['status'] == NETRO_ERROR) :
+		raise netroException(r.json())
+	# is there an http error
+	elif (not r.ok) :
+		r.raise_for_status()
+	# so, it seems everything is ok !
+	else :
+		return r.json()
+
+def stopWater(key) :
+	payload = {'key': key}
+	r = requests.post(NETRO_BASE_URL + NETRO_POST_STOPWATER, data=payload)
+
+	if DEBUG_MODE :
+		print("netrofunction.stopWater --> url = {0}".format(r.url))
+		print("netrofunction.stopWater --> data = {0}".format(payload))
+		print("netrofunction.stopWater --> POST request status code = {0}, json result = {1}".format(r.status_code, r.json()))
+
+	# is there a netro error ?
+	if (r.json()['status'] == NETRO_ERROR) :
+		raise netroException(r.json())
+	# is there an http error
+	elif (not r.ok) :
+		r.raise_for_status()
+	# so, it seems everything is ok !
+	else :
+		return r.json()
+
+def noWater(key, days=None) :
+	payload = {'key': key}
+	if (days is not None) :
+		payload['days'] = round(days)
+
+	r = requests.post(NETRO_BASE_URL + NETRO_POST_NOWATER, data=payload)
+
+	if DEBUG_MODE :
+		print("netrofunction.noWater --> url = {0}".format(r.url))
+		print("netrofunction.noWater --> data = {0}".format(payload))
+		print("netrofunction.noWater --> POST request status code = {0}, json result = {1}".format(r.status_code, r.json()))
+
+	# is there a netro error ?
+	if (r.json()['status'] == NETRO_ERROR) :
+		raise netroException(r.json())
+	# is there an http error
+	elif (not r.ok) :
+		r.raise_for_status()
+	# so, it seems everything is ok !
+	else :
+		return r.json()
+
+def getSensorData (key, startDate='', endDate='') :
+	payload = {'key': key}
+	if (startDate) :
+		payload['start_date'] = startDate
+	if (endDate) :
+		payload['end_date'] = endDate
+	r = requests.get(NETRO_BASE_URL + NETRO_GET_SENSORDATA, params=payload)
+
+	if DEBUG_MODE :
+		print("netrofunction.getSensorData --> url = {0}".format(r.url))
+		print("netrofunction.getSensorData --> GET request status code = {0}, json result = {1}".format(r.status_code, r.json()))
+
+	# is there a netro error ?
+	if (r.json()['status'] == NETRO_ERROR) :
+		raise netroException(r.json())
+	# is there an http error
+	elif (not r.ok) :
+		r.raise_for_status()
+	# so, it seems everything is ok !
+	else :
+		return r.json()
+
+def getEvents (key, typeOfEvent=0, startDate='', endDate='') :
+	payload = {'key': key}
+	if (typeOfEvent > 0) :
+		payload['event'] = typeOfEvent;
+	if (startDate) :
+		payload['start_date'] = startDate
+	if (endDate) :
+		payload['end_date'] = endDate
+	r = requests.get(NETRO_BASE_URL + NETRO_GET_EVENTS, params=payload)
+
+	if DEBUG_MODE :
+		print("netrofunction.getEvents --> url = {0}".format(r.url))
+		print("netrofunction.getEvents --> GET request status code = {0}, json result = {1}".format(r.status_code, r.json()))
+
+	# is there a netro error ?
+	if (r.json()['status'] == NETRO_ERROR) :
+		raise netroException(r.json())
+	# is there an http error
+	elif (not r.ok) :
+		r.raise_for_status()
+	# so, it seems everything is ok !
+	else :
+		return r.json()

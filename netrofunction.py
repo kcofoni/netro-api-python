@@ -51,7 +51,7 @@ def getInfo(key):
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
         raise netroException(r.json())
-    # is there an http error
+    # is there an http error ?
     elif (not r.ok):
         r.raise_for_status()
     # so, it seems everything is ok !
@@ -72,7 +72,7 @@ def setStatus(key, status):
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
         raise netroException(r.json())
-    # is there an http error
+    # is there an http error ?
     elif (not r.ok):
         r.raise_for_status()
     # so, it seems everything is ok !
@@ -98,7 +98,7 @@ def getSchedules(key, zoneIds=None, startDate='', endDate=''):
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
         raise netroException(r.json())
-    # is there an http error
+    # is there an http error ?
     elif (not r.ok):
         r.raise_for_status()
     # so, it seems everything is ok !
@@ -124,7 +124,7 @@ def getMoistures(key, zoneIds=None, startDate='', endDate=''):
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
         raise netroException(r.json())
-    # is there an http error
+    # is there an http error ?
     elif (not r.ok):
         r.raise_for_status()
     # so, it seems everything is ok !
@@ -165,7 +165,7 @@ def reportWeather(key, date, condition, rain, rain_prob, temp, t_min, t_max, t_d
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
         raise netroException(r.json())
-    # is there an http error
+    # is there an http error ?
     elif (not r.ok):
         r.raise_for_status()
     # so, it seems everything is ok !
@@ -188,7 +188,7 @@ def setMoisture(key, moisture, zoneIds):
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
         raise netroException(r.json())
-    # is there an http error
+    # is there an http error ?
     elif (not r.ok):
         r.raise_for_status()
     # so, it seems everything is ok !
@@ -215,7 +215,7 @@ def water(key, duration, zoneIds=None, delay=0, startTime=''):
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
         raise netroException(r.json())
-    # is there an http error
+    # is there an http error ?
     elif (not r.ok):
         r.raise_for_status()
     # so, it seems everything is ok !
@@ -236,7 +236,7 @@ def stopWater(key):
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
         raise netroException(r.json())
-    # is there an http error
+    # is there an http error ?
     elif (not r.ok):
         r.raise_for_status()
     # so, it seems everything is ok !
@@ -260,7 +260,7 @@ def noWater(key, days=None):
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
         raise netroException(r.json())
-    # is there an http error
+    # is there an http error ?
     elif (not r.ok):
         r.raise_for_status()
     # so, it seems everything is ok !
@@ -284,7 +284,7 @@ def getSensorData(key, startDate='', endDate=''):
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
         raise netroException(r.json())
-    # is there an http error
+    # is there an http error ?
     elif (not r.ok):
         r.raise_for_status()
     # so, it seems everything is ok !
@@ -310,7 +310,7 @@ def getEvents(key, typeOfEvent=0, startDate='', endDate=''):
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
         raise netroException(r.json())
-    # is there an http error
+    # is there an http error ?
     elif (not r.ok):
         r.raise_for_status()
     # so, it seems everything is ok !

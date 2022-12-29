@@ -8,8 +8,9 @@ ctrl_key = os.environ['NPA_CTRL']
 sens_key = os.environ['NPA_SENS']
 
 # set log level (WARNING, INFO, DEBUG, ERROR, CRITICAL)
-logging.basicConfig(format='%(asctime)s -- %(levelname)s:%(message)s',
-                    level=logging.INFO, datefmt='%m/%d/%Y %I:%M:%S', encoding='utf-8')
+logging.basicConfig(format='%(asctime)s -- %(name)s:%(levelname)s:%(message)s',
+                    level=logging.INFO, datefmt='%m/%d/%Y %I:%M:%S',
+                    encoding='utf-8')
 
 # get info
 logging.info("running get info...")

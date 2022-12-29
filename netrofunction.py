@@ -1,6 +1,13 @@
 import requests
 import logging
 
+# configure logging very simply, only one specific logger and a null handler
+# in order to prevent the logged events in this library being output to
+# sys.stderr in the absence of logging configuration
+logger = logging.getLogger(__name__)
+logging.getLogger(__name__).addHandler(logging.NullHandler())
+
+# netro constants as defined by the netro api (NPA)
 NETRO_BASE_URL = 'https://api.netrohome.com/npa/v1/'
 NETRO_GET_SCHEDULES = 'schedules.json'
 NETRO_GET_INFO = 'info.json'
@@ -28,8 +35,6 @@ NETRO_EVENT_DEVICEONLINE = 2
 NETRO_EVENT_SCHEDULESTART = 3
 NETRO_EVENT_SCHEDULEEND = 4
 
-DEBUG_MODE = True
-
 
 class netroException(Exception):
     def __init__(self, result):
@@ -45,10 +50,9 @@ def getInfo(key):
     payload = {'key': key}
     r = requests.get(NETRO_BASE_URL + NETRO_GET_INFO, params=payload)
 
-    if DEBUG_MODE:
-        logging.debug("netrofunction.getInfo --> url = {0}".format(r.url))
-        logging.debug("netrofunction.getInfo --> GET request status code = {0},\
-        	 json result = {1}".format(r.status_code, r.json()))
+    logger.debug("getInfo --> url = {0}".format(r.url))
+    logger.debug("getInfo --> GET request status code = {0},\
+    	 json result = {1}".format(r.status_code, r.json()))
 
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
@@ -65,11 +69,10 @@ def setStatus(key, status):
     payload = {'key': key, 'status': status}
     r = requests.post(NETRO_BASE_URL + NETRO_POST_STATUS, data=payload)
 
-    if DEBUG_MODE:
-        logging.debug("netrofunction.setStatus --> url = {0}".format(r.url))
-        logging.debug("netrofunction.setStatus --> data = {0}".format(payload))
-        logging.debug("netrofunction.setStatus --> POST request status code = {0},\
-        	 json result = {1}".format(r.status_code, r.json()))
+    logger.debug("setStatus --> url = {0}".format(r.url))
+    logger.debug("setStatus --> data = {0}".format(payload))
+    logger.debug("setStatus --> POST request status code = {0},\
+    	 json result = {1}".format(r.status_code, r.json()))
 
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
@@ -92,10 +95,9 @@ def getSchedules(key, zoneIds=None, startDate='', endDate=''):
         payload['end_date'] = endDate
     r = requests.get(NETRO_BASE_URL + NETRO_GET_SCHEDULES, params=payload)
 
-    if DEBUG_MODE:
-        logging.debug("netrofunction.getSchedules --> url = {0}".format(r.url))
-        logging.debug("netrofunction.getSchedules --> GET request status code = {0},\
-        	 json result = {1}".format(r.status_code, r.json()))
+    logger.debug("getSchedules --> url = {0}".format(r.url))
+    logger.debug("getSchedules --> GET request status code = {0},\
+    	 json result = {1}".format(r.status_code, r.json()))
 
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
@@ -118,10 +120,9 @@ def getMoistures(key, zoneIds=None, startDate='', endDate=''):
         payload['end_date'] = endDate
     r = requests.get(NETRO_BASE_URL + NETRO_GET_MOISTURES, params=payload)
 
-    if DEBUG_MODE:
-        logging.debug("netrofunction.getMoistures --> url = {0}".format(r.url))
-        logging.debug("netrofunction.getMoistures --> GET request status code = {0},\
-        	 json result = {1}".format(r.status_code, r.json()))
+    logger.debug("getMoistures --> url = {0}".format(r.url))
+    logger.debug("getMoistures --> GET request status code = {0},\
+    	 json result = {1}".format(r.status_code, r.json()))
 
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
@@ -159,13 +160,10 @@ def reportWeather(key, date, condition, rain, rain_prob, temp, t_min, t_max,
         payload['pressure'] = pressure
     r = requests.post(NETRO_BASE_URL + NETRO_POST_REPORTWEATHER, data=payload)
 
-    if DEBUG_MODE:
-        logging.debug(
-            "netrofunction.reportWeather --> url = {0}".format(r.url))
-        logging.debug(
-            "netrofunction.reportWeather --> data = {0}".format(payload))
-        logging.debug("netrofunction.reportWeather --> POST request status code = {0},\
-        	 json result = {1}".format(r.status_code, r.json()))
+    logger.debug("reportWeather --> url = {0}".format(r.url))
+    logger.debug("reportWeather --> data = {0}".format(payload))
+    logger.debug("reportWeather --> POST request status code = {0},\
+    	 json result = {1}".format(r.status_code, r.json()))
 
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
@@ -184,12 +182,10 @@ def setMoisture(key, moisture, zoneIds):
         payload['zones'] = '[{0}]'.format(', '.join(zoneIds))
     r = requests.post(NETRO_BASE_URL + NETRO_POST_MOISTURE, data=payload)
 
-    if DEBUG_MODE:
-        logging.debug("netrofunction.setMoisture --> url = {0}".format(r.url))
-        logging.debug(
-            "netrofunction.setMoisture --> data = {0}".format(payload))
-        logging.debug("netrofunction.setMoisture --> POST request status code = {0},\
-        	 json result = {1}".format(r.status_code, r.json()))
+    logger.debug("setMoisture --> url = {0}".format(r.url))
+    logger.debug("setMoisture --> data = {0}".format(payload))
+    logger.debug("setMoisture --> POST request status code = {0},\
+    	 json result = {1}".format(r.status_code, r.json()))
 
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
@@ -212,11 +208,10 @@ def water(key, duration, zoneIds=None, delay=0, startTime=''):
         payload['start_time'] = startTime
     r = requests.post(NETRO_BASE_URL + NETRO_POST_WATER, data=payload)
 
-    if DEBUG_MODE:
-        logging.debug("netrofunction.water --> url = {0}".format(r.url))
-        logging.debug("netrofunction.water --> data = {0}".format(payload))
-        logging.debug("netrofunction.water --> POST request status code = {0},\
-        	 json result = {1}".format(r.status_code, r.json()))
+    logger.debug("water --> url = {0}".format(r.url))
+    logger.debug("water --> data = {0}".format(payload))
+    logger.debug("water --> POST request status code = {0},\
+    	 json result = {1}".format(r.status_code, r.json()))
 
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
@@ -233,11 +228,10 @@ def stopWater(key):
     payload = {'key': key}
     r = requests.post(NETRO_BASE_URL + NETRO_POST_STOPWATER, data=payload)
 
-    if DEBUG_MODE:
-        logging.debug("netrofunction.stopWater --> url = {0}".format(r.url))
-        logging.debug("netrofunction.stopWater --> data = {0}".format(payload))
-        logging.debug("netrofunction.stopWater --> POST request status code = {0},\
-        	 json result = {1}".format(r.status_code, r.json()))
+    logger.debug("stopWater --> url = {0}".format(r.url))
+    logger.debug("stopWater --> data = {0}".format(payload))
+    logger.debug("stopWater --> POST request status code = {0},\
+    	 json result = {1}".format(r.status_code, r.json()))
 
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
@@ -257,11 +251,10 @@ def noWater(key, days=None):
 
     r = requests.post(NETRO_BASE_URL + NETRO_POST_NOWATER, data=payload)
 
-    if DEBUG_MODE:
-        logging.debug("netrofunction.noWater --> url = {0}".format(r.url))
-        logging.debug("netrofunction.noWater --> data = {0}".format(payload))
-        logging.debug("netrofunction.noWater --> POST request status code = {0},\
-        	 json result = {1}".format(r.status_code, r.json()))
+    logger.debug("noWater --> url = {0}".format(r.url))
+    logger.debug("noWater --> data = {0}".format(payload))
+    logger.debug("noWater --> POST request status code = {0},\
+    	 json result = {1}".format(r.status_code, r.json()))
 
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
@@ -282,11 +275,9 @@ def getSensorData(key, startDate='', endDate=''):
         payload['end_date'] = endDate
     r = requests.get(NETRO_BASE_URL + NETRO_GET_SENSORDATA, params=payload)
 
-    if DEBUG_MODE:
-        logging.debug(
-            "netrofunction.getSensorData --> url = {0}".format(r.url))
-        logging.debug("netrofunction.getSensorData --> GET request status code = {0},\
-        	 json result = {1}".format(r.status_code, r.json()))
+    logger.debug("getSensorData --> url = {0}".format(r.url))
+    logger.debug("getSensorData --> GET request status code = {0},\
+    	 json result = {1}".format(r.status_code, r.json()))
 
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):
@@ -309,10 +300,9 @@ def getEvents(key, typeOfEvent=0, startDate='', endDate=''):
         payload['end_date'] = endDate
     r = requests.get(NETRO_BASE_URL + NETRO_GET_EVENTS, params=payload)
 
-    if DEBUG_MODE:
-        logging.debug("netrofunction.getEvents --> url = {0}".format(r.url))
-        logging.debug("netrofunction.getEvents --> GET request status code = {0},\
-        	 json result = {1}".format(r.status_code, r.json()))
+    logger.debug("getEvents --> url = {0}".format(r.url))
+    logger.debug("getEvents --> GET request status code = {0},\
+    	 json result = {1}".format(r.status_code, r.json()))
 
     # is there a netro error ?
     if (r.json()['status'] == NETRO_ERROR):

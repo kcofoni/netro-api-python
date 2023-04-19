@@ -20,8 +20,10 @@ REQUESTS_TIMEOUT=30
 logger = logging.getLogger(__name__)
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
+# netro public api url
+netro_base_url = 'https://api.netrohome.com/npa/v1/'
+
 # netro constants as defined by the netro api (NPA)
-NETRO_BASE_URL = 'https://api.netrohome.com/npa/v1/'
 NETRO_GET_SCHEDULES = 'schedules.json'
 NETRO_GET_INFO = 'info.json'
 NETRO_GET_MOISTURES = 'moistures.json'
@@ -62,7 +64,7 @@ class NetroException(Exception):
 def get_info(key):
     """Get basic information of the device"""
     payload = {'key': key}
-    res = requests.get(NETRO_BASE_URL + NETRO_GET_INFO, params=payload,
+    res = requests.get(netro_base_url + NETRO_GET_INFO, params=payload,
                         timeout=REQUESTS_TIMEOUT)
 
     logger.info("getInfo --> url = %s", res.url)
@@ -83,7 +85,7 @@ def get_info(key):
 def set_status(key, status):
     """Update status to online or standby"""
     payload = {'key': key, 'status': status}
-    res = requests.post(NETRO_BASE_URL + NETRO_POST_STATUS, data=payload,
+    res = requests.post(netro_base_url + NETRO_POST_STATUS, data=payload,
                         timeout=REQUESTS_TIMEOUT)
 
     logger.info("setStatus --> url = %s", res.url)
@@ -111,7 +113,7 @@ def get_schedules(key, zone_ids=None, start_date='', end_date=''):
         payload['start_date'] = start_date
     if end_date:
         payload['end_date'] = end_date
-    res = requests.get(NETRO_BASE_URL + NETRO_GET_SCHEDULES, params=payload,
+    res = requests.get(netro_base_url + NETRO_GET_SCHEDULES, params=payload,
                         timeout=REQUESTS_TIMEOUT)
 
     logger.info("getSchedules --> url = %s", res.url)
@@ -138,7 +140,7 @@ def get_moistures(key, zone_ids=None, start_date='', end_date=''):
         payload['start_date'] = start_date
     if end_date:
         payload['end_date'] = end_date
-    res = requests.get(NETRO_BASE_URL + NETRO_GET_MOISTURES, params=payload,
+    res = requests.get(netro_base_url + NETRO_GET_MOISTURES, params=payload,
                         timeout=REQUESTS_TIMEOUT)
 
     logger.info("getMoistures --> url = %s", res.url)
@@ -180,7 +182,7 @@ def report_weather(key, date, condition, rain, rain_prob, temp, t_min, t_max,
         payload['humidity'] = humidity
     if pressure:
         payload['pressure'] = pressure
-    res = requests.post(NETRO_BASE_URL + NETRO_POST_REPORTWEATHER, data=payload,
+    res = requests.post(netro_base_url + NETRO_POST_REPORTWEATHER, data=payload,
                         timeout=REQUESTS_TIMEOUT)
 
     logger.info("reportWeather --> url = %s", res.url)
@@ -204,7 +206,7 @@ def set_moisture(key, moisture, zone_ids=None):
     payload = {'key': key, 'moisture': moisture}
     if zone_ids is not None:
         payload['zones'] = f'[{",".join(zone_ids)}]'
-    res = requests.post(NETRO_BASE_URL + NETRO_POST_MOISTURE, data=payload,
+    res = requests.post(netro_base_url + NETRO_POST_MOISTURE, data=payload,
                         timeout=REQUESTS_TIMEOUT)
 
     logger.info("setMoisture --> url = %s", res.url)
@@ -232,7 +234,7 @@ def water(key, duration, zone_ids=None, delay=0, start_time=''):
         payload['delay'] = delay
     if start_time:
         payload['start_time'] = start_time
-    res = requests.post(NETRO_BASE_URL + NETRO_POST_WATER, data=payload,
+    res = requests.post(netro_base_url + NETRO_POST_WATER, data=payload,
                         timeout=REQUESTS_TIMEOUT)
 
     logger.info("water --> url = %s", res.url)
@@ -254,7 +256,7 @@ def water(key, duration, zone_ids=None, delay=0, start_time=''):
 def stop_water(key):
     """Stop watering (all currently watering zones)"""
     payload = {'key': key}
-    res = requests.post(NETRO_BASE_URL + NETRO_POST_STOPWATER, data=payload,
+    res = requests.post(netro_base_url + NETRO_POST_STOPWATER, data=payload,
                         timeout=REQUESTS_TIMEOUT)
 
     logger.info("stopWater --> url = %s", res.url)
@@ -279,7 +281,7 @@ def no_water(key, days=None):
     if days is not None:
         payload['days'] = round(days)
 
-    res = requests.post(NETRO_BASE_URL + NETRO_POST_NOWATER, data=payload,
+    res = requests.post(netro_base_url + NETRO_POST_NOWATER, data=payload,
                         timeout=REQUESTS_TIMEOUT)
 
     logger.info("noWater --> url = %s", res.url)
@@ -305,7 +307,7 @@ def get_sensor_data(key, start_date='', end_date=''):
         payload['start_date'] = start_date
     if end_date:
         payload['end_date'] = end_date
-    res = requests.get(NETRO_BASE_URL + NETRO_GET_SENSORDATA, params=payload,
+    res = requests.get(netro_base_url + NETRO_GET_SENSORDATA, params=payload,
                         timeout=REQUESTS_TIMEOUT)
 
     logger.info("getSensorData --> url = %s", res.url)
@@ -332,7 +334,7 @@ def get_events(key, type_of_event=0, start_date='', end_date=''):
         payload['start_date'] = start_date
     if end_date:
         payload['end_date'] = end_date
-    res = requests.get(NETRO_BASE_URL + NETRO_GET_EVENTS, params=payload,
+    res = requests.get(netro_base_url + NETRO_GET_EVENTS, params=payload,
                         timeout=REQUESTS_TIMEOUT)
 
     logger.info("getEvents --> url = %s", res.url)

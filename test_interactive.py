@@ -23,6 +23,12 @@ logging.basicConfig(format='%(asctime)s -- %(name)s:%(levelname)s:%(message)s',
                     level=logging.INFO, datefmt='%m/%d/%Y %I:%M:%S',
                     encoding='utf-8')
 
+SIMU_NETRO_URL = 'http://vmtest:9080/'
+PROD_NETRO_URL = 'https://api.netrohome.com/npa/v1/'
+
+# set proper netro environnement (prod or simu)
+netrofunction.netro_base_url = SIMU_NETRO_URL
+
 def getinfo(key):
     res = netrofunction.get_info(key)
     logging.info("return = %s", res["status"])
@@ -30,6 +36,8 @@ def getinfo(key):
     if (res["data"].get("device")) is not None:
         logging.info("name = %s", res["data"]["device"]["name"])
         logging.info("status = %s", res["data"]["device"]["status"])
+        if (res["data"]["device"].get("battery_level")):
+            logging.info("battery level = %s", res["data"]["device"]["battery_level"])
     elif (res["data"].get("sensor")):
         logging.info("name = %s", res["data"]["sensor"]["name"])
         logging.info("status = %s", res["data"]["sensor"]["status"])

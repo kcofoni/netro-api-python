@@ -13,6 +13,7 @@ import os
 import netrofunction
 import sys, getopt
 import json
+import datetime
 
 # get the device keys from the environment variables
 ctrl_key = os.environ['NPA_CTRL']
@@ -26,8 +27,57 @@ logging.basicConfig(format='%(asctime)s -- %(name)s:%(levelname)s:%(message)s',
 SIMU_NETRO_URL = 'http://vmtest:9080/'
 PROD_NETRO_URL = 'https://api.netrohome.com/npa/v1/'
 
+NETRO_ZONE_ITH = "ith"
+NETRO_ZONE_ENABLED = "enabled"
+NETRO_ZONE_SMART = "smart"
+NETRO_ZONE_NAME = "name"
+
+
 # set proper netro environnement (prod or simu)
 netrofunction.netro_base_url = SIMU_NETRO_URL
+
+class Zone:
+    """Zone of a Netro controller."""
+
+    def __init__(
+        self,
+        ith: int,
+        enabled: bool,
+        smart: str,
+        name: str,
+    ) -> None:
+        """Create a zone (virtual device)."""
+        self.ith = ith
+        self.enabled = enabled
+        self.smart = smart
+        self.name = name
+        self.past_schedules = list[dict[str, any]]  # type: ignore[valid-type]
+        self.coming_schedules = list[dict[str, any]]
+        self.moistures = list[dict[str, any]]
+
+    @property
+    def last_run(self) -> dict:
+        """Get the last executed/executing run."""
+        if len(self.past_schedules) != 0:
+            return self.past_schedules[0]
+        return None
+
+    @property
+    def next_run(self) -> dict:
+        """Get the next valid run to be executed in the future."""
+        if len(self.coming_schedules) != 0:
+            return self.coming_schedules[0]
+        return None
+
+    @property
+    def moisture(self) -> dict:
+        """Get the last reported moisture."""
+        if len(self.moistures) != 0:
+            return self.moistures[0]
+        return None
+
+
+zones = dict()
 
 def getinfo(key):
     res = netrofunction.get_info(key)
@@ -38,12 +88,66 @@ def getinfo(key):
         logging.info("status = %s", res["data"]["device"]["status"])
         if (res["data"]["device"].get("battery_level")):
             logging.info("battery level = %s", res["data"]["device"]["battery_level"])
+        for zone in res["data"]["device"]["zones"]:
+            if zone["enabled"]:
+                logging.info("zone [%s]: (%s, %s, %s)", zone["ith"], zone["name"], zone["enabled"], zone["smart"])
+                zones[zone["ith"]] = Zone(zone["ith"], zone["enabled"], zone["smart"], zone["name"])
+        logging.debug("---------------- zones --------------------")
+        for zone_key in zones:
+            logging.info("ith : %s, name : %s, enabled : %s, smart : %s", zones[zone_key].ith, zones[zone_key].name, zones[zone_key].enabled, zones[zone_key].smart)
+        logging.debug("-----------------fin zone-------------------")
     elif (res["data"].get("sensor")):
         logging.info("name = %s", res["data"]["sensor"]["name"])
         logging.info("status = %s", res["data"]["sensor"]["status"])
     else:
         logging.error("type of netro device not managed %s")
 
+def getschedules(key):
+    schedules = netrofunction.get_schedules(key)["data"]["schedules"]
+    for schedule in schedules:
+        logging.debug("schedule[%s] : %s", type(schedule), schedule)
+    # split par zone et tri par start date
+    if not zones:
+        getinfo(key)
+    for zone_key in zones:
+#    for i in range(1, 4):
+        past_schedules_of_zone = list(filter(lambda schedule: schedule["zone"] == zone_key and schedule["status"] in ["EXECUTED", "EXECUTING"], schedules))
+        logging.debug("past schedules pour la zone %s", zone_key)
+        past_schedules_of_zone_sorted = sorted(past_schedules_of_zone, key=(lambda schedule_of_zone: schedule_of_zone["start_time"]), reverse=True)
+        for schedule in past_schedules_of_zone_sorted:
+            # tri par start_date
+            logging.debug(schedule)
+        post_schedules_of_zone = list(filter(lambda schedule: schedule["zone"] == zone_key and schedule["status"] == "VALID", schedules))
+        logging.debug("post schedules pour la zone %s", zone_key)
+        post_schedules_of_zone_sorted = sorted(post_schedules_of_zone, key=(lambda schedule_of_zone: schedule_of_zone["start_time"]), reverse=False)
+        for schedule in post_schedules_of_zone_sorted:
+            # tri par start_date
+            logging.debug(schedule)
+        if past_schedules_of_zone_sorted:
+            logging.info("le dernier arrosage pour la zone %s était le %s (UTC)", zone_key, datetime.datetime.fromisoformat(past_schedules_of_zone_sorted[0]["start_time"]))
+        else:
+            logging.info("pas d'info sur le dernier arrosage de la zone %s", zone_key)
+        if post_schedules_of_zone_sorted:
+            logging.info("le prochain arrosage pour la zone %s sera le %s à %s", zone_key, post_schedules_of_zone_sorted[0]["local_date"], post_schedules_of_zone_sorted[0]["local_start_time"])
+        else:
+            logging.info("pas d'info sur le prochain arrosage de la zone %s", zone_key)
+
+def getmoistures(key):
+    moistures = netrofunction.get_moistures(key)["data"]["moistures"]
+    for moisture in moistures:
+        logging.debug("moisture[%s] : %s", type(moisture), moisture)
+    # split par zone et tri par start date
+    for i in range(1, 4):
+        moistures_of_zone = list(filter(lambda moisture: moisture["zone"] == i, moistures))
+        logging.debug("moistures pour la zone %s", i)
+        for moisture in moistures_of_zone:
+            # tri par start_date
+            logging.debug(moisture)
+        if moistures_of_zone:
+            logging.info("humidité de %s%% estimée le 2023-03-29 pour la zone %s", moistures_of_zone[0]["moisture"], i)
+        else:
+            logging.info("pas d'info sur l'humidité de la zone %s", i)
+        
 def main (argv):
     netro_function = ''
     status_tobeset = ''
@@ -71,6 +175,12 @@ def main (argv):
         else:
             getinfo(ctrl_key)
             getinfo(sens_key)            
+    elif netro_function == 'getschedules':
+        print ('get schedules...')
+        getschedules(ctrl_key)
+    elif netro_function == 'getmoistures':
+        print ('get moistures...')
+        getmoistures(ctrl_key)
     elif netro_function == 'setstatus':
         if status_tobeset == '':
             print ('status missing for set status netro function')

@@ -34,7 +34,7 @@ NETRO_ZONE_NAME = "name"
 
 
 # set proper netro environnement (prod or simu)
-netrofunction.netro_base_url = SIMU_NETRO_URL
+netrofunction.netro_base_url = PROD_NETRO_URL
 
 class Zone:
     """Zone of a Netro controller."""

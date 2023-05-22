@@ -8,13 +8,16 @@ import os
 import netrofunction
 
 # get the device keys from the environment variables
-ctrl_key = os.environ['NPA_CTRL']
-sens_key = os.environ['NPA_SENS']
+ctrl_key = os.environ["NPA_CTRL"]
+sens_key = os.environ["NPA_SENS"]
 
 # set log level (WARNING, INFO, DEBUG, ERROR, CRITICAL)
-logging.basicConfig(format='%(asctime)s -- %(name)s:%(levelname)s:%(message)s',
-                    level=logging.INFO, datefmt='%m/%d/%Y %I:%M:%S',
-                    encoding='utf-8')
+logging.basicConfig(
+    format="%(asctime)s -- %(name)s:%(levelname)s:%(message)s",
+    level=logging.INFO,
+    datefmt="%m/%d/%Y %I:%M:%S",
+    encoding="utf-8",
+)
 
 # get info
 logging.info("running get info...")
@@ -47,7 +50,7 @@ res = netrofunction.set_status(ctrl_key, 0)
 
 # get moistures
 logging.info("running get moistures...")
-res = netrofunction.get_moistures(ctrl_key, {'1', '2'})
+res = netrofunction.get_moistures(ctrl_key, {"1", "2"})
 
 # no water
 # logging.info("running no water...")
@@ -55,17 +58,16 @@ res = netrofunction.get_moistures(ctrl_key, {'1', '2'})
 
 # get sensor data
 logging.info("running get sensor data...")
-res = netrofunction.get_sensor_data(sens_key, '2022-12-28', '2022-12-28')
+res = netrofunction.get_sensor_data(sens_key, "2022-12-28", "2022-12-28")
 res = netrofunction.get_sensor_data(sens_key)
 
 # get events
 logging.info("running get events...")
-res = netrofunction.get_events(ctrl_key, 4, '2022-12-01', '2022-12-02')
+res = netrofunction.get_events(ctrl_key, 4, "2022-12-01", "2022-12-02")
 res = netrofunction.get_events(ctrl_key)
 
 # get schedules
 logging.info("running get schedules...")
-res = netrofunction.get_schedules(ctrl_key, {'1', '2', '3'})
-res = netrofunction.get_schedules(
-    ctrl_key, {'1', '2', '3'}, '2022-12-01', '2022-12-02')
-res = netrofunction.get_schedules(ctrl_key, {'1', '2', '3'}, '2022-12-01')
+res = netrofunction.get_schedules(ctrl_key, {"1", "2", "3"})
+res = netrofunction.get_schedules(ctrl_key, {"1", "2", "3"}, "2022-12-01", "2022-12-02")
+res = netrofunction.get_schedules(ctrl_key, {"1", "2", "3"}, "2022-12-01")

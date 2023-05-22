@@ -54,7 +54,7 @@ NETRO_EVENT_SCHEDULEEND = 4
 
 def set_netro_base_url(url: str):
     """Change the Netro Public API url."""
-    global netro_base_url  # pylint: disable=global-statement
+    global netro_base_url  # pylint: disable=global-statement,invalid-name
     netro_base_url = url
 
 
@@ -125,7 +125,8 @@ def set_status(key, status):
 
 
 def get_schedules(key, zone_ids=None, start_date="", end_date=""):
-    """Get schedules of the given zones (all zones if not specified). yyyy-mm-dd is the date format."""
+    """Get schedules of the given zones (all zones if not specified).
+    yyyy-mm-dd is the date format."""
     payload = {"key": key}
     if zone_ids is not None:
         payload["zones"] = f'[{",".join(zone_ids)}]'
@@ -156,7 +157,8 @@ def get_schedules(key, zone_ids=None, start_date="", end_date=""):
 
 
 def get_moistures(key, zone_ids=None, start_date="", end_date=""):
-    """Get moisture data of the given zones (all zones if not specified). yyyy-mm-dd is the date format."""
+    """Get moisture data of the given zones (all zones if not specified).
+    yyyy-mm-dd is the date format."""
     payload = {"key": key}
     if zone_ids is not None:
         payload["zones"] = f'[{",".join(zone_ids)}]'

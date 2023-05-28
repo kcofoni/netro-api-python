@@ -219,12 +219,14 @@ def main(argv):
     """main program"""
     netro_function = ""
     status_tobeset = ""
+    moisture_tobeset = ""
     device_type = ""
-    opts, args = getopt.getopt(argv, "hd:ve:s:", ["execute=", "status=", "device="])
+    zone_id = ""
+    opts, args = getopt.getopt(argv, "hd:z:m:ve:s:", ["execute=", "status=", "device="])
     for opt, arg in opts:
         if opt == "-h":
             print(
-                "usage : test_interactive [-hv] -e [getinfo|getschedules|getmoistures|setstatus] [-s [on|off]] [-d [ctrl|sensor]]"
+                "usage : test_interactive [-hv] -e <getinfo|getschedules|getmoistures|setstatus> [-s <on|off>] [-d <ctrl|sensor>] [-z <id_zone>] [-m <moisture>]"
             )
             sys.exit()
         elif opt in ("-e", "--execute"):
@@ -233,6 +235,10 @@ def main(argv):
             status_tobeset = arg
         elif opt in ("-d", "--device"):
             device_type = arg
+        elif opt in ("-z", "--zone"):
+            zone_id = arg
+        elif opt in ("-m", "--moisture"):
+            moisture_tobeset = arg
     if netro_function == "":
         print("missing netro function")
         sys.exit()
@@ -257,6 +263,14 @@ def main(argv):
         else:
             print("set status", status_tobeset, "...")
             netrofunction.set_status(ctrl_key, 1 if status_tobeset == "on" else 0)
+    elif netro_function == "setmoisture":
+        if moisture_tobeset == "":
+            print("moisture missing for set moisture netro function")
+        elif zone_id == "":
+            print("zone id missing for set moisture netro function")
+        else:
+            print("set moisture", status_tobeset, "...")
+            netrofunction.set_moisture(ctrl_key, moisture_tobeset, zone_id)
     else:
         print("unknown netro function")
 
